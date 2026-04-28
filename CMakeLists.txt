@@ -1,7 +1,17 @@
-cmake_minimum_required(VERSION 4.2)
+cmake_minimum_required(VERSION 3.16)
 project(gallery)
 
 set(CMAKE_CXX_STANDARD 20)
+
+# --- Platform detection ---
+option(TRIMUI "Build for TRimUI Smart Pro (aarch64)" OFF)
+
+if (TRIMUI)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+    set(PLATFORM "SDL" CACHE STRING "" FORCE)
+    set(OPENGL_VERSION "ES 2.0" CACHE STRING "" FORCE)
+endif ()
+
 
 # --- Download and compile raylib ---
 include(FetchContent)
@@ -13,23 +23,28 @@ FetchContent_Declare(
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(raylib)
 
-# Collect all sources
+# --- Sources ---
 file(GLOB_RECURSE SOURCES src/*.cpp)
-
-# Executable
 add_executable(gallery ${SOURCES})
 
 # Include src/ itself
-# Point to the root of your source folder
 target_include_directories(gallery PRIVATE src)
 
 # If you have an external 'include' folder for 3rd party libs
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
     target_include_directories(gallery PRIVATE include)
-endif()
+endif ()
 
-# Debug flags
-target_compile_options(gallery PRIVATE -g -fdiagnostics-color)
+# --- Compile options ---
+if (TRIMUI)
+    target_compile_options(gallery PRIVATE -O2 -march=armv8-a -mtune=cortex-a53)
+else ()
+    target_compile_options(gallery PRIVATE -g -fdiagnostics-color)
+endif ()
 
-# Linkear raylib (funciona igual en Linux y Windows)
-target_link_libraries(gallery raylib)
+# --- Link ---
+if (TRIMUI)
+    target_link_libraries(gallery raylib SDL2 atomic m dl pthread stdc++fs)
+else ()
+    target_link_libraries(gallery raylib)
+endif ()

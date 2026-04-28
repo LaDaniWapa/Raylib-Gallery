@@ -2,16 +2,22 @@
 #include <chrono>
 #include <iomanip>
 #include <sstream>
+#include <dirent.h>
+#include <sys/stat.h>
 #include "raylib.h"
 
 namespace chrono = std::chrono;
 
-void addDateAndTime(Photo &p, fs::file_time_type ftime) {
-    auto sctp = chrono::time_point_cast<chrono::system_clock::duration>(
-        ftime - fs::file_time_type::clock::now() + chrono::system_clock::now()
-    );
-    std::time_t cftime = chrono::system_clock::to_time_t(sctp);
-    std::tm *lt = std::localtime(&cftime);
+bool directoryExists(const std::string &path) {
+    struct stat info{};
+    return stat(path.c_str(), &info) == 0 && S_ISDIR(info.st_mode);
+}
+
+void addDateAndTime(Photo &p, const std::string& path) {
+    struct stat info{};
+    if (stat(path.c_str(), &info) != 0) return;
+
+    std::tm *lt = std::localtime(&info.st_mtime);
 
     std::stringstream ssDate;
     ssDate << std::put_time(lt, "%Y-%m-%d");
@@ -26,26 +32,38 @@ bool ImageRepository::Init() {
     return true;
 }
 
-void ImageRepository::Scan(fs::path path) {
-    TraceLog(LOG_INFO, "SCANNER: Looking for images in %s", path.string().c_str());
+void ImageRepository::Scan(const std::string &path) {
+    TraceLog(LOG_INFO, "SCANNER: Looking for images in %s", path.c_str());
 
-    for (const auto &entry: fs::recursive_directory_iterator(path, fs::directory_options::follow_directory_symlink)) {
-        if (!entry.is_regular_file()) continue;
-
-        // Get the extension and make it lowercase
-        std::string ext = entry.path().extension().string();
-        std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-
-        // Check for both JPG and PNG
-        if (ext == ".jpg" || ext == ".jpeg" || ext == ".png") {
-            Photo p;
-            p.path = entry.path().string();
-            addDateAndTime(p, entry.last_write_time());
-            library.push_back(p);
-        }
+    if (!directoryExists(path)) {
+        TraceLog(LOG_ERROR, "SCANNER: Path %s does not exist", path.c_str());
+        return;
     }
 
-    TraceLog(LOG_INFO, "SCANNER: Found %d images", (int)library.size());
+    DIR *dir = opendir(path.c_str());
+    if (!dir) return;
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != nullptr) {
+        std::string name = entry->d_name;
+        if (name == "." || name == "..") continue;
+
+        std::string fullPath = path + "/" + name;
+
+        if (entry->d_type == DT_DIR) {
+            Scan(fullPath);
+        } else {
+            auto ext = name.substr(name.find_last_of('.')+1);
+            if (ext == "jpg" || ext == "jpeg" || ext == "png") {
+                Photo p;
+                p.path = fullPath;
+                addDateAndTime(p, fullPath);
+                library.push_back(p);
+            }
+        }
+    }
+    closedir(dir);
+    TraceLog(LOG_INFO, "SCANNER: Found %d images", (int) library.size());
 }
 
 void ImageRepository::Sort() {

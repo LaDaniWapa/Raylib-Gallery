@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "Config.h"
 #include "data/DeviceManager.h"
 #include "data/ImageRepository.h"
 #include "model/Photo.h"
@@ -18,13 +19,16 @@ class Renderer {
     const ThemePalette *theme;
     DeviceManager *device_manager;
     ImageRepository *imgRepo{};
-    static constexpr int POOL_SIZE = 12;
+    static constexpr int POOL_SIZE = Config::GRID_COLS * Config::GRID_ROWS;
     ThumbnailSlot texturePool[POOL_SIZE];
     Image tmpBuffer{};
     int selectedIndex = 0;
+    int viewOffset = 0;
+    int currentPhotoIndex = 0;
 
-    void DrawTopBar() const;
     void LoadInitialTextures();
+    void UpdateTexturePool(int currentPhotoIndex);
+    void DrawTopBar() const;
     void DrawLoadingScreen() const;
     void DrawPhotoList();
     void DrawBigPhoto();
@@ -36,6 +40,10 @@ public:
     Renderer(ImageRepository &imgRepo, DeviceManager &device_manager);
 
     void RenderFrame(AppState &state);
+    inline void updateIndex(int newIndex);
+    int getIndex() const;
+    void addToIndex(int amount);
+    void subtractToIndex(int amount);
 };
 
 #endif //GALLERY_RENDERER_H

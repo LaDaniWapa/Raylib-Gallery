@@ -3,9 +3,7 @@
 #include "Controller.h"
 #include "data/ImageRepository.h"
 #include "ui/Renderer.h"
-#include <filesystem>
 
-namespace fs = std::filesystem;
 using namespace Config;
 
 int main() {
@@ -14,11 +12,12 @@ int main() {
     InitWindow(SCREEN_W, SCREEN_H, "Raylib Gallery Test");
     SetTargetFPS(30);
 
-    Controller controller;
     DeviceManager device_manager;
     ImageRepository imgRepo;
-    imgRepo.Scan(fs::path("/home/daniela/Pictures/test/"));
+    imgRepo.Scan("/home/daniela/Pictures/test/");
+    imgRepo.Scan("/mnt/mmc/MUOS/screenshot/");
     Renderer renderer(imgRepo, device_manager);
+    Controller controller(renderer);
 
     AppState state = Loading;
 

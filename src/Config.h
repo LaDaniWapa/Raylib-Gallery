@@ -11,6 +11,10 @@ namespace Config {
     constexpr int GRID_ROWS = 2;
     constexpr int GRID_PAD  = 32;  // Space between photos and edges
     constexpr int SLOT_SIZE = 280; // Size of the square photo
+
+    constexpr float STICK_DEAD   = 0.3f;  // dead zone of the stick
+    constexpr float REPEAT_DELAY = 0.4f;  // delay before triggering repeat
+    constexpr float REPEAT_RATE  = 0.15f; // repeat rate
 }
 
 #endif //GALLERY_CONFIG_H
