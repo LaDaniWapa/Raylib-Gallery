@@ -17,6 +17,8 @@ void Renderer::LoadInitialTextures() {
         }
 
         // 2. Make it square
+        const float newSize = (float) std::min(img.width, img.height);
+        ImageCrop(&img, Rectangle{img.width / 2 - newSize / 2, 0, newSize, newSize});
         ImageResizeNN(&img, Config::SLOT_SIZE, Config::SLOT_SIZE);
 
         // 3. Move to vram
@@ -32,8 +34,8 @@ void Renderer::LoadInitialTextures() {
 }
 
 void Renderer::DrawTopBar() const {
-    DrawText("22:22", 10, 10, 20, theme->Text);
-    DrawText("100 %", Config::SCREEN_W - MeasureText("100 %", 20) - 10, 10, 20, theme->Text);
+    DrawText(TextFormat("%s", device_manager->GetTime().c_str()), 10, 10, 20, theme->Text);
+    DrawText(TextFormat("%3s %%", device_manager->GetBattery().c_str()), Config::SCREEN_W - MeasureText("100 %", 20) - 10, 10, 20, theme->Text);
 }
 
 void Renderer::UpdateTexturePool(const int currentPhotoIndex) {
@@ -71,6 +73,8 @@ void Renderer::UpdateTexturePool(const int currentPhotoIndex) {
 
         if (nextPool[i].photoIndex == -1 && globalIndex < photos.size()) {
             Image img = LoadImage(photos[globalIndex].path.c_str());
+            const float newSize = (float) std::min(img.width, img.height);
+            ImageCrop(&img, Rectangle{img.width / 2 - newSize / 2, 0, newSize, newSize});
             ImageResizeNN(&img, Config::SLOT_SIZE, Config::SLOT_SIZE);
 
             nextPool[i].texture = LoadTextureFromImage(img);
@@ -127,15 +131,12 @@ void Renderer::DrawPhotoList() {
         const int x = Config::GRID_PAD + (column * (Config::SLOT_SIZE + Config::GRID_PAD));
         const int y = Config::TOPBAR_HEIGHT + Config::GRID_PAD + (row * (Config::SLOT_SIZE + Config::GRID_PAD));
 
-        // 1. Draw Background Panel
-        DrawRectangle(x, y, Config::SLOT_SIZE, Config::SLOT_SIZE, theme->Panel);
-
-        // 2. Draw Image
+        // 1. Draw Image
         if (texturePool[i].photoIndex != -1 && texturePool[i].texture.id > 0) {
             DrawTexture(texturePool[i].texture, x, y, WHITE);
         }
 
-        // 3. Draw Selection Border
+        // 2. Draw Selection Border
         if (selectedIndex == texturePool[i].photoIndex) {
             DrawRectangleLinesEx({
                                      (float) x - 4,

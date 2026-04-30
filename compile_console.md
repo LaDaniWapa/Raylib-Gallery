@@ -1,10 +1,12 @@
 ## create docker container
+Container from this [repo](https://github.com/geniot/trimui-smart-pro-toolchain)
 ```bash
 docker run -d --name gallery -it --volume=./:/work/ --workdir=/work trimui-sdk
 ```
 
 ## go inside
 ```bash
+docker start gallery
 docker exec -it gallery /bin/bash
 ```
 

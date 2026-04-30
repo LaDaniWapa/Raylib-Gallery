@@ -2,17 +2,20 @@
 #define GALLERY_DEVICEMANAGER_H
 #include <string>
 
-// Class to fetch system hour and battery
+#include "Config.h"
 
 class DeviceManager {
-    // todo: Know how to get battery and time info from device
-
     std::string time = "22:22";
-    int battery = 50;
+    std::string battery = "50";
+    int frameCounter = Config::BATTERY_DELAY;
 
 public:
-    std::string GetTime();
-    int GetBattery();
+    void Init();
+    const std::string &GetTime();
+    std::string &GetBattery();
+    void Update();
+    void UpdateBattery();
+    void UpdateTime();
 };
 
 #endif //GALLERY_DEVICEMANAGER_H
