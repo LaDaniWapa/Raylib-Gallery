@@ -35,7 +35,8 @@ void Renderer::LoadInitialTextures() {
 
 void Renderer::DrawTopBar() const {
     DrawText(TextFormat("%s", device_manager->GetTime().c_str()), 10, 10, 20, theme->Text);
-    DrawText(TextFormat("%3s %%", device_manager->GetBattery().c_str()), Config::SCREEN_W - MeasureText("100 %", 20) - 10, 10, 20, theme->Text);
+    std::string batteryText = TextFormat("%s%3s%%", device_manager->IsCharging() ? "+ " : "  ", device_manager->GetBattery().c_str());
+    DrawText(batteryText.c_str(), Config::SCREEN_W - MeasureText("+ 100%", 20) - 10, 10, 20, theme->Text);
 }
 
 void Renderer::UpdateTexturePool(const int currentPhotoIndex) {

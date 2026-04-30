@@ -1,12 +1,9 @@
 #ifndef GALLERY_RENDERER_H
 #define GALLERY_RENDERER_H
 
-#include <vector>
-
 #include "Config.h"
 #include "data/DeviceManager.h"
 #include "data/ImageRepository.h"
-#include "model/Photo.h"
 #include "model/AppState.h"
 #include "ui/Theme.h"
 
