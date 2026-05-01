@@ -7,30 +7,32 @@
 using namespace Config;
 
 int main() {
+    // --- Window setup ---
     SetTraceLogLevel(LOG_ALL);
     SetConfigFlags(FLAG_WINDOW_HIGHDPI);
     InitWindow(SCREEN_W, SCREEN_H, "Raylib Gallery Test");
     SetTargetFPS(Config::FPS);
 
+    // --- Initialization ---
     DeviceManager device_manager;
     device_manager.Init();
 
     ImageRepository imgRepo;
-    imgRepo.Scan("/home/daniela/Pictures/test/");
-    imgRepo.Scan("/mnt/mmc/MUOS/screenshot/");
+    imgRepo.Init();
 
     Renderer renderer(imgRepo, device_manager);
-
     Controller controller(renderer);
 
     AppState state = Loading;
 
+    // --- Main loop ---
     while (!WindowShouldClose()) {
         controller.Update(state);
         device_manager.Update();
         renderer.RenderFrame(state);
     }
 
+    // --- Cleanup ---
     CloseWindow();
     return 0;
 }

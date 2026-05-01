@@ -28,8 +28,9 @@ void addDateAndTime(Photo &p, const std::string& path) {
     p.time = ssTime.str();
 }
 
-bool ImageRepository::Init() {
-    return true;
+void ImageRepository::Init() {
+    Scan("/home/daniela/Pictures/test/");
+    Scan("/mnt/mmc/MUOS/screenshot/");
 }
 
 void ImageRepository::Scan(const std::string &path) {

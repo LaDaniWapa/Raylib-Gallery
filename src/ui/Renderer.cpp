@@ -175,6 +175,14 @@ Renderer::Renderer(ImageRepository &imgRepo, DeviceManager &device_manager) {
     }
 }
 
+Renderer::~Renderer() {
+    for (int i = 0; i < POOL_SIZE; i++) {
+        if (texturePool[i].texture.id > 0) {
+            UnloadTexture(texturePool[i].texture);
+        }
+    }
+}
+
 void Renderer::RenderFrame(AppState &state) {
     BeginDrawing();
     ClearBackground(theme->Bg);

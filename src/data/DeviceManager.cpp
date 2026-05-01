@@ -30,6 +30,7 @@ void DeviceManager::UpdateTime() {
     std::stringstream ss;
     ss << std::put_time(lt, "%H:%M");
     time = ss.str();
+    TraceLog(LOG_INFO, "Time updated: %s", time.c_str());
 }
 
 void DeviceManager::UpdateBattery() {
@@ -37,6 +38,9 @@ void DeviceManager::UpdateBattery() {
     if (ifs.is_open()) {
         std::getline(ifs, battery);
         ifs.close();
+        TraceLog(LOG_INFO, "Battery capacity: '%s'", battery.c_str());
+    } else {
+        TraceLog(LOG_ERROR, "Cannot open battery capacity path: %s", Config::BATTERY_CAPACITY_PATH);
     }
 }
 

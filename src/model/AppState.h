@@ -1,12 +1,17 @@
 #ifndef GALLERY_APPSTATE_H
 #define GALLERY_APPSTATE_H
 
-// Enum class for app states
-
+/**
+ * @brief Represents the current state of the application.
+ */
 enum AppState {
+    /// Initial state, scanning and loading photos
     Loading,
+    /// Browsing the photo grid
     PhotoList,
+    /// Viewing a single photo fullscreen
     BigPhoto,
+    /// Confirmation dialog before deleting a photo
     DeleteConfirm,
 };
 

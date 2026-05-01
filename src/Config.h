@@ -1,7 +1,9 @@
 #ifndef GALLERY_CONFIG_H
 #define GALLERY_CONFIG_H
-#include <string>
 
+/**
+ * @brief Global application configuration constants.
+ */
 namespace Config {
     constexpr int FPS = 30;
     constexpr int SCREEN_W = 1280;

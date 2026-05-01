@@ -15,7 +15,7 @@ Controller::Controller(Renderer &renderer) {
 }
 
 void Controller::Update(AppState &state) {
-    int gamepadIdx = GetActiveGamepad();
+    const int gamepadIdx = GetActiveGamepad();
 
     if (IsKeyPressed(KEY_ENTER) || gamepadIdx != -1 &&
         IsGamepadButtonPressed(gamepadIdx, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
@@ -63,7 +63,6 @@ void Controller::Update(AppState &state) {
         if (IsGamepadButtonPressed(gamepadIdx, GAMEPAD_BUTTON_MIDDLE_RIGHT)) {
             CloseWindow();
             TraceLog(LOG_DEBUG, "====== CLOSE APPLICATION ======");
-            //exit(0);
         }
 
         const float axisX = GetGamepadAxisMovement(gamepadIdx, GAMEPAD_AXIS_LEFT_X);
